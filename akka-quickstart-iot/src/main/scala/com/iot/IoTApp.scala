@@ -1,7 +1,7 @@
-package com.lightbend.akka.sample
+package com.iot
 
 import akka.actor.{ActorSystem,Actor,Props,ActorRef}
-import com.lightbend.akka.sample.IotSupervisor._
+
 import scala.io.StdIn
 
 object IoTApp extends App {

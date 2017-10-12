@@ -1,5 +1,5 @@
 //#full-example
-package com.lightbend.akka.sample
+package com.akka.sample
 
 import akka.actor.{ Actor, ActorLogging, ActorRef, ActorSystem, Props }
 import scala.io.StdIn

@@ -1,4 +1,4 @@
-package com.lightbend.akka.sample
+package com.iot
 
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}
@@ -112,7 +112,6 @@ class DeviceGroupQuerySpec (_system: ActorSystem) extends TestKit(_system)
     device2.expectMsg(Device.ReadTemperature(requestId=1))
 
     queryActor.tell(Device.RespondTemperature(requestId = 1, Some(1.0)), device1.ref)
-
 
     requestor.expectMsg(DeviceGroup.RespondAllTemperatures(
       requestId = 1,

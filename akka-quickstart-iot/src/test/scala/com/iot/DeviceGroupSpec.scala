@@ -1,4 +1,4 @@
-package com.lightbend.akka.sample
+package com.iot
 
 import org.scalatest.{BeforeAndAfterAll, FlatSpecLike, Matchers}
 import akka.testkit.{ImplicitSender, TestActorRef, TestKit, TestProbe}

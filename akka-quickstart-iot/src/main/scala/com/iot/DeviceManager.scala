@@ -1,4 +1,4 @@
-package com.lightbend.akka.sample
+package com.iot
 
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props, Terminated}
