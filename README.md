@@ -5,7 +5,7 @@ All the below notes is from : https://doc.akka.io/docs/akka/current/scala/guide/
 * All these are not thought well at that time because we never has any multi-core process systems in olden days. In traditional way, when we want to avoid corruption of object's state, we had to use locks and locks are leading to less performance and deadlock situations.
 * In multi-core processes, now-a-days, CPU don't talk directly with main memory. They use cache lines. There are many things in common in communication of CPUs and nodes in a network. This commuincation between CPUs using the cache lines is very costly. Thats the reason we mark only "few variables" as "volatile" that means they are passed between CPU cores.
 
-	So how do we solve this, should we stop sharing data between threads? Is it acceptable in real world?
+	: So how do we solve this, should we stop sharing data between threads? Is it acceptable in real world?
 
 * Unlike OOP objects, actors not only hide encapsulation but also its execution. This is acheived by passing messages but not by calling methods on object. Communication between actors is via message passing not by method calling...
 
@@ -16,29 +16,27 @@ All the below notes is from : https://doc.akka.io/docs/akka/current/scala/guide/
 * Conflict free replicated data types (CRDTs) -- Redis -- im-memory cache impl -- data structure allows writes simultaneously and at later point in time, conflicts are resolved with math formulaes
 
 * Main modules of Akka
-** Akka-actor
-** Akka-Remoting
-** Akka-Cluster
-** Akka Cluster Sharding
-** Akka Cluster Singleton
-** Akka Cluster Publish-Subcribe
-** Akka Persistence
-** Akka Distributed Data
-** Akka-HTTP
-** Akka Stream
+:* Akka-actor
+:* Akka-Remoting
+:* Akka-Cluster
+:* Akka Cluster Sharding
+:* Akka Cluster Singleton
+:* Akka Cluster Publish-Subcribe
+:* Akka Persistence
+:* Akka Distributed Data
+:* Akka-HTTP
+:* Akka Stream
 
 
 * With actors, first we have to identify the actor hierarchy like we do find objects in OOPs. In OOPs, we start with Interface design. But here with actors we have to identify the protocals. Since its not posssible to idenfy the protocols in language, we generally design the messages that we want to send across the actors (their basic element of communication)
 
-When ever a message has to be designed :-
-
-** Keep it as immutable class in scala (case class)
-** Design it keeping the distributed messaging in mind. 
+* When ever a message has to be designed :-
+:* Keep it as immutable class in scala (case class)
+:* Design it keeping the distributed messaging in mind. 
 	
-The messages can be lost, can be duplicated, may not be delivered in order.. How to deal with them?
-
-message delivery
-message ordering	
+* The messages can be lost, can be duplicated, may not be delivered in order.. How to deal with them?
+** message delivery
+** message ordering	
 
 Since, Akka choses message delivery as "At-most-once" delivery (duplication of messages and no guarantee of mesage delivery). Message order is maintained between the sender and receiver pair.	
 
