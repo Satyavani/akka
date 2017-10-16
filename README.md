@@ -62,9 +62,7 @@ All the below notes is from : https://doc.akka.io/docs/akka/current/scala/guide/
 
 	- DeviceGroup will be watching the Device actors and then Terminated(deviceActor) message is received by DeviceGroup on a device shutdown. 
 
-###### Till now actors are defined for domain objects (like Device, Device Group etc)  
-
-* They can also be defined for tasks (like querying the temperatures from all devices).
+###### Till now actors are defined for domain objects (like Device, Device Group etc) They can also be defined for tasks (like querying the temperatures from all devices).
 
 * Now the scenario is like there should be a way to list all the temperatures from all the registered devices for a group.
 
@@ -72,15 +70,12 @@ All the below notes is from : https://doc.akka.io/docs/akka/current/scala/guide/
   - There can be multiple queries fired at one shot for the same group. If we keep it as another case pattern in DeviceGroup, then the queries will be queued causing high response times.
   - To handle the new device registrations while querying.
 
-
 * Following things can happen while reading the temperatures
   - A new Device can be registered while the query is in between
   - While reading the temperatures, a Device can go down (shutdown) 
   - A Device can take long time than anticipated
 
-`The first scenario is handled by taking the snapshot of the devices registered. So that multiple queries can be run with different snapshots at a time.`
-
-3 can be solved by having a response deadline using the context.system.scheduler API.
+`The first scenario is handled by taking the snapshot of the devices registered. So that multiple queries can be run with different snapshots at a time.3 can be solved by having a response deadline using the context.system.scheduler API.`
 
 When quering a device for temperature, we might face following response:
 
