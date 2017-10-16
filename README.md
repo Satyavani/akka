@@ -1,5 +1,6 @@
 All the below notes is from : https://doc.akka.io/docs/akka/current/scala/guide/index.html
 
+* The main difference between messages and events is that messages are directed while events happen. Messages have a clear destination while events may be observed by zero or more (0-N) observers.
 
 concurrency means handling tasks in parallel. In OOPs kind of lang, its acheived by spanning a new thread for async processing. But the question is how that task completion should be notified to main thread without blocking main thread. If there is any exception in worker thread, how should be added to main thread's stack trace... or that worker thread got crashed....
 
@@ -99,3 +100,10 @@ Typically messages follow into patterns. conversation patterns
 1. Request-Respond (temparature recordings)
 2. Delegate-Respond (device and group registration)
 3. Create-watch-terminate (for creating group and device actor as children)
+
+
+In an actor, if a message is received which is not matching any of the case statements then thats called "Dead Letters"
+
+#Actor in Detail
+
+*If one actor carries very important data (i.e. its state shall not be lost if avoidable), this actor should source out any possibly dangerous sub-tasks to children it supervises and handle failures of these children as appropriate. Depending on the nature of the requests, it may be best to create a new child for each request, which simplifies state management for collecting the replies. This is known as the “Error Kernel Pattern” from Erlang.

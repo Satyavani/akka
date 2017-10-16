@@ -106,7 +106,7 @@ class DeviceGroupQuerySpec (_system: ActorSystem) extends TestKit(_system)
       requestId = 1,
       requestor = requestor.ref,
       actorToDeviceId = Map(device1.ref -> "device1", device2.ref -> "device2"),
-      3.seconds))
+      2.seconds))
 
     device1.expectMsg(Device.ReadTemperature(requestId=1))
     device2.expectMsg(Device.ReadTemperature(requestId=1))
