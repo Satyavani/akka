@@ -35,10 +35,9 @@ All the below notes is from : https://doc.akka.io/docs/akka/current/scala/guide/
 :* Design it keeping the distributed messaging in mind. 
 	
 * The messages can be lost, can be duplicated, may not be delivered in order.. How to deal with them?
-** message delivery
-** message ordering	
-
-Since, Akka choses message delivery as "At-most-once" delivery (duplication of messages and no guarantee of mesage delivery). Message order is maintained between the sender and receiver pair.	
+  - message delivery
+  - message ordering	
+`Since, Akka choses message delivery as "At-most-once" delivery (duplication of messages and no guarantee of mesage delivery). Message order is maintained between the sender and receiver pair.`	
 
 Messages can be either case classes or case objects. When the message has any property associated to it then declare it as "final case class". If the message is just for acknowledgement (DeviceRegistered) or a marker kind of interface (TemperatureNotAvailable, DeviceNotAvailable) then declare them as "case object"
 
