@@ -95,3 +95,11 @@ Typically messages follow patterns. (conversation patterns)
 ## Actor in Detail
 
 * If one actor carries very important data (i.e. its state shall not be lost if avoidable), this actor should source out any possibly dangerous sub-tasks to children it supervises and handle failures of these children as appropriate. Depending on the nature of the requests, it may be best to create a new child for each request, which simplifies state management for collecting the replies. This is known as the “Error Kernel Pattern” from Erlang.
+
+* If one actor carries out operations on another actor (not falling in hierarchy, so supervisor pattern doesnt apply), it good to watch the actor for its liveliness.
+
+#### Actor Best Practices
+
+1. Actors should be nice co-workers. Should not block each other for resources for long time. Actors should not block thread by waiting for an external entity like lock or a network socket. It should passively wait on thread instead of blocking the thread.
+2. Dont pass mutating objects between actors. They have to be communicated by using <i>immutable messages</i>
+3. Actors are made containers for state and behavior. This should be mutated by sharing this state and behavor using "Scala Closures"
