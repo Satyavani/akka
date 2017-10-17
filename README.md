@@ -90,6 +90,7 @@ Typically messages follow patterns. (conversation patterns)
 * Delegate-Respond (device and group registration)
 * Create-watch-terminate (for creating group and device actor as children)
 
+
 * In an actor, if a message is received which is not matching any of the case statements then thats called "Dead Letters"
 
 ## Actor in Detail
@@ -98,8 +99,76 @@ Typically messages follow patterns. (conversation patterns)
 
 * If one actor carries out operations on another actor (not falling in hierarchy, so supervisor pattern doesnt apply), it good to watch the actor for its liveliness.
 
+* An actor is a container for state, behavior, Mail box, child actors and Supervisor Strategy. This all is encapsulated in "Actor Reference".
+
+* An actor has explicit life cycle. Its not automatically destroyed. Programmer has to take care of it. This gives flexibility in managing release of resources.
+
+* Internally, each actor has its own single light-weight thread. 
+
+* Each actor has got exactly one FIFO (default) Mail box. Customizations to Mail box are also possible. Messages are ordered based on the time received.
+
+* A priority mailbox can also be set based on need which will be processed based on message priority.
+
+* Every actor is potentially a supervisor for its child actors. Child actors can be altered by suing `context.actorOf(...)` or `context.stop(child)` APIs.
+
+* The actual creation or termination of actors happens behind the scenes in asynchronous way so its doesnt block the supervising actor.
+
+* Once an actor terminates, i.e. fails in a way which is not handled by a restart, stops itself or is stopped by its supervisor, it will free up its resources, draining all remaining messages from its mailbox into the system’s “dead letter mailbox” which will forward them to the EventStream as DeadLetters.
+
+* Supervisor has the following options which an exception is encountered in child actor:
+	- Resume the child actor using its existing internal state
+	- Restart the child actor by removing the existing internal state
+	- Stop the child actor permenantly
+	- Escalate the failure, by signaling the failure itself.
+	
+
 #### Actor Best Practices
 
 1. Actors should be nice co-workers. Should not block each other for resources for long time. Actors should not block thread by waiting for an external entity like lock or a network socket. It should passively wait on thread instead of blocking the thread.
 2. Dont pass mutating objects between actors. They have to be communicated by using <i>immutable messages</i>
 3. Actors are made containers for state and behavior. This should be mutated by sharing this state and behavor using "Scala Closures"
+
+#### Top-Level Supervisors
+
+* Root Guardian (/:) -- bubble-walker -- This is a synthetic ActorRef. 
+* system Guardian (/system:)
+* user Guardian (/user:) -- Actors created using system.actorOf(...)
+
+* Restart of any actor will precisely look like this:
+	- Suspend the actor and all its children -- Dont process normal message until its resumed
+	- call the old instance's `preRestart` hook (defaults to sending termination on all child actors and calling `postStop` of self)
+	- wait for all the children to process termination(`context.stop(child)`). This termination is also async, will wait till last child to respond to progress to next step.
+	- create a new actor instance by invoking originally provided factory again
+	- invoke `postRestart` on the new instance (which by default calls `preStart`)
+	- send restart request to all child actors which are not killed in step 3. restarted child nodes follow from step 2 recursively.
+	- resume the actor
+	
+* Life cycle monitoring in Akka is termed as `DeathWatch`
+
+* Delayed restarts with BackOff Supervision pattern. The sub-sequential restart of the child actors is exponentially delayed so that necessary dependencies are up in the mean time. Like time taken to boot a database server etc or a third party service( url ).	
+
+##### One-For-One Strategy vs One-For-All Strategy
+
+* The difference between them is that the former applies the obtained directive only to the failed child, whereas the latter applies it to all siblings as well.
+
+* The AllForOneStrategy is applicable in cases where the ensemble of children has such tight dependencies among them, that a failure of one child affects the function of the others, i.e. they are inextricably linked. Since a restart does not clear out the mailbox, it often is best to terminate the children upon failure and re-create them explicitly from the supervisor (by watching the children’s lifecycle);
+
+* Normally stopping a child (i.e. not in response to a failure) will not automatically terminate the other children in an all-for-one strategy; this can easily be done by watching their lifecycle: if the Terminated message is not handled by the supervisor, it will throw a DeathPactException which (depending on its supervisor) will restart it, and the default preRestart action will terminate all children. Of course this can be handled explicitly as well.
+
+#### Actor Paths and Addresses
+
+* Refer to actor path and addresses hierarchy at https://doc.akka.io/docs/akka/current/scala/general/addressing.html
+
+#### Actor and JMM
+
+* JVM has following "happens before" rules:
+
+1. Monitor Lock -- Lock releas happens before sub-sequent lock aquisition
+2. Volatile variables -- Write "happens before" subsequent reads
+
+* Akka modal also as following "happens before" rules:
+
+1. The actor send rule : the send of a message to an Actor happens before receiving the message by the same actor.
+2. The actor subsequent processing: the processing of message happens before processing of next message by the same actor.
+
+`In layman’s terms this means that changes to internal fields of the actor are visible when the next message is processed by that actor. So fields in your actor need not be volatile or equivalent.`   

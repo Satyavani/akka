@@ -7,6 +7,8 @@ import scala.io.StdIn
 object IoTApp extends App {
   val system = ActorSystem("IoT-system")
 
+  // System.out.println(system.settings)
+
   val iotSupervisor: ActorRef = system.actorOf(IotSupervisor.props(), "IoT-supervisor")
 
   try StdIn.readLine()
