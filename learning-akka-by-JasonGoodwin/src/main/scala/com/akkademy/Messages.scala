@@ -1,5 +1,7 @@
 package com.akkademy
 
-object Messages {
+case object Messages {
+
+  final case class SetRequest(key: String, value: Object)
 
 }
